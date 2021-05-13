@@ -128,8 +128,10 @@ def read_serial():
         if len(msg):
             # Replace chars to make a JSON
             data = json.loads(msg.decode("utf-8").replace("'", '"').replace(" ", ""))
+            gate_status = False
             try:
                 db.check_driver(data['uid'], data['reader'])
+                app.ser.write(data["reader"].encode())
             except:
                 print('Database error. Please run again.')
                 app.ser.close()
