@@ -27,9 +27,17 @@ def check_driver(rfid, log_type):
 
     if len(drivers):
         log_driver(drivers[0], log_type)
-        print("Logged successfully")
+        if log_type == "1":
+            print(drivers[0]["name"] + " - " + drivers[0]["rfid"] + " - time-in")
+        elif log_type == "2":
+            print(drivers[0]["name"] + " - " + drivers[0]["rfid"] + " - time-out")
+
+        return True
+
     else:
-        print("Unknown driver")
+        print("Unregistered RFID")
+
+        return False
 
 
 def log_driver(driver, log_type):
@@ -40,3 +48,5 @@ def log_driver(driver, log_type):
     logCursor = db.cursor()
     logCursor.execute(logSql, value)
     db.commit()
+
+
