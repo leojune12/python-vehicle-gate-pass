@@ -35,7 +35,7 @@ def check_driver(rfid, log_type):
         return True
 
     else:
-        print("Unregistered RFID")
+        print("Unregistered Driver - " + str(rfid))
 
         return False
 
