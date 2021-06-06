@@ -48,5 +48,46 @@ def log_driver(driver, log_type):
     logCursor = db.cursor()
     logCursor.execute(logSql, value)
     db.commit()
+    
+def get_last_scanned():
+    print('get_last_scanned')
+    lastScannedCursor = db.cursor(dictionary=True)
 
+    lastScannedSql = "SELECT * FROM logs ORDER BY ID DESC LIMIT 1"
 
+    lastScannedCursor.execute(lastScannedSql)
+
+    last_log = lastScannedCursor.fetchone()
+    
+    if last_log:        
+        driverCursor = db.cursor(dictionary=True)
+        
+        driverSql = "SELECT * FROM drivers where id = " + str(last_log['driver_id'])
+        
+        driverCursor.execute(driverSql)
+        
+        driver = driverCursor.fetchone()
+        
+        logTypeCursor = db.cursor(dictionary=True)
+        
+        logTypeSql = "SELECT * FROM log_types where id = " + str(last_log['log_type_id'])
+        
+        logTypeCursor.execute(logTypeSql)
+        
+        logType = logTypeCursor.fetchone()
+        
+        driverName = "Name: " + driver['name']
+        
+        driverRfid = "RFID: " + driver['rfid']
+        
+        driverPhoto = driver['photo']
+        
+        driverLogType = "Log Type: " + logType['log_type']
+        
+        driverLogTime = "Time: " + str(last_log['created_at'])
+        
+        return {'name' : driverName, 'rfid': driverRfid, 'photo': driverPhoto, 'log_type': driverLogType, 'time': driverLogTime}
+    
+    else:
+        {'name' : 'No records yet', 'rfid': '', 'photo': '', 'log_type': '', 'time': ''}
+        

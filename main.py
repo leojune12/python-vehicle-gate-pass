@@ -11,6 +11,12 @@ import dependencies.db as db
 class App(threading.Thread):
     comboBox = None
     infoLabel = None
+    lastScanLabel = None
+    driverImage = None
+    driverNameLabel = None
+    driverRfidLabel = None
+    driverLogTypeLabel = None
+    driverLogTimeLabel = None
     button = None
     ser = Serial()
     ser.baudrate = 115200
@@ -30,19 +36,75 @@ class App(threading.Thread):
         self.root.title("CAPIZ STATE UNIVERSITY")
         # setting window size
         width = 400
-        height = 300
+        height = 380
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
 
+        # logo
         logo = Image.open("capsu-logo.png")
         test = ImageTk.PhotoImage(logo)
-        label1 = tk.Label(image=test)
-        label1.image = test
-        label1.place(x=30, y=20)
+        logoLabel = tk.Label(image=test)
+        logoLabel.image = test
+        logoLabel.place(x=30, y=20)
 
+        # driver profile photo
+        fixed_height = 120
+        profile_photo = Image.open("C:/laragon/www/vehicle-gate-pass-system/public/anonymous.png")
+        height_percent = (fixed_height / float(profile_photo.size[1]))
+        width_size = int((float(profile_photo.size[0]) * float(height_percent)))
+        profile_photo = profile_photo.resize((width_size, fixed_height), Image.NEAREST)
+        photo = ImageTk.PhotoImage(profile_photo)
+        App.driverImage = tk.Label(self.root)
+        App.driverImage['image'] = photo
+        App.driverImage.place(x=30, y=230)
+
+        # last scan label
+        App.lastScanLabel = tk.Label(self.root)
+        ft = tkFont.Font(family='Times', size=12)
+        App.lastScanLabel["font"] = ft
+        App.lastScanLabel["fg"] = "#333333"
+        App.lastScanLabel["justify"] = "left"
+        App.lastScanLabel["text"] = "Last scanned:"
+        App.lastScanLabel.place(x=30, y=200, width=90, height=30)
+        
+        # Driver name
+        App.driverNameLabel = tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times',size=10)
+        App.driverNameLabel["font"] = ft
+        App.driverNameLabel["fg"] = "#333333"
+        App.driverNameLabel["justify"] = "left"
+        App.driverNameLabel["text"] = "Name:"
+        App.driverNameLabel.place(x=160, y=230, width=200, height=30)
+        
+        # Driver RFID
+        App.driverRfidLabel=tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times',size=10)
+        App.driverRfidLabel["font"] = ft
+        App.driverRfidLabel["fg"] = "#333333"
+        App.driverRfidLabel["justify"] = "left"
+        App.driverRfidLabel["text"] = "RFID:"
+        App.driverRfidLabel.place(x=160, y=260, width=200, height=30)   
+        
+        # Driver Log Type
+        App.driverLogTypeLabel=tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times',size=10)
+        App.driverLogTypeLabel["font"] = ft
+        App.driverLogTypeLabel["fg"] = "#333333"
+        App.driverLogTypeLabel["justify"] = "left"
+        App.driverLogTypeLabel["text"] = "Log Type:"
+        App.driverLogTypeLabel.place(x=160, y=290, width=210, height=30)  
+        
+        # Driver Log Time
+        App.driverLogTimeLabel=tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times',size=10)
+        App.driverLogTimeLabel["font"] = ft
+        App.driverLogTimeLabel["fg"] = "#333333"
+        App.driverLogTimeLabel["justify"] = "left"
+        App.driverLogTimeLabel["text"] = "Time:"
+        App.driverLogTimeLabel.place(x=160, y=320, width=210, height=30)          
         GLabel_964 = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=16)
         GLabel_964["font"] = ft
@@ -50,14 +112,6 @@ class App(threading.Thread):
         GLabel_964["justify"] = "center"
         GLabel_964["text"] = "RFID VEHICLE GATE PASS"
         GLabel_964.place(x=114, y=35, width=250, height=34)
-
-        GLabel_50 = tk.Label(self.root)
-        ft = tkFont.Font(family='Times', size=10)
-        GLabel_50["font"] = ft
-        GLabel_50["fg"] = "#333333"
-        GLabel_50["justify"] = "center"
-        GLabel_50["text"] = "Select port:"
-        GLabel_50.place(x=30, y=110, width=70, height=25)
 
         App.comboBox = ttk.Combobox(self.root)
         ft = tkFont.Font(family='Times', size=10)
@@ -82,13 +136,13 @@ class App(threading.Thread):
         App.button["command"] = self.connect_disconnect
         App.button['state'] = 'disable'
 
-        App.infoLabel = tk.Label(self.root)
-        ft = tkFont.Font(family='Times', size=12)
+        App.infoLabel = tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times', size=10)
         App.infoLabel["font"] = ft
-        App.infoLabel["fg"] = "#000000"
-        App.infoLabel["justify"] = "center"
-        App.infoLabel["text"] = "Select port to connect"
-        App.infoLabel.place(x=30, y=220, width=341, height=30)
+        App.infoLabel["fg"] = "#333333"
+        App.infoLabel["justify"] = "left"
+        App.infoLabel["text"] = "Select port:"
+        App.infoLabel.place(x=30, y=110, width=180, height=30)
 
         # Check db credentials from .env file
         if not db.db_status:
@@ -97,6 +151,7 @@ class App(threading.Thread):
             App.infoLabel["text"] = "Database error. Please run again."
         else:
             print("System started")
+            set_last_scanned_driver(db.get_last_scanned())
 
         self.root.mainloop()
 
@@ -105,7 +160,7 @@ class App(threading.Thread):
             App.ser.port = App.comboBox.get()
             App.button['text'] = 'Disconnect'
             App.button['bg'] = '#fb4545'
-            App.infoLabel['text'] = 'Connected at port: ' + App.ser.port + '. Baud rate: ' + str(App.ser.baudrate)
+            App.infoLabel['text'] = 'Connected:'
             App.comboBox['state'] = 'disable'
             App.ser.open()
 
@@ -113,25 +168,33 @@ class App(threading.Thread):
             App.ser.close()
             App.button['text'] = 'Connect'
             App.button['bg'] = '#1cd751'
-            App.infoLabel['text'] = 'Disconnected. Select port to connect.'
+            App.infoLabel['text'] = 'Select port:'
             App.comboBox['state'] = 'readonly'
 
 
     def port_changed(self, event):
         App.button['state'] = 'normal'
         App.button['bg'] = "#1cd751"
-
+            
 
 def read_serial():
+    
     try:
         msg = App.ser.readline()
         if len(msg):
             # Replace chars to make a JSON
             data = json.loads(msg.decode("utf-8").replace("'", '"').replace(" ", ""))
+            
             try:
                 driver_registered = db.check_driver(data['uid'], data['reader'])
                 if driver_registered:
+                    # send command to arduino to open gate
                     app.ser.write(data["reader"].encode())
+                    
+                    # update last scanned
+                    set_last_scanned_driver(db.get_last_scanned())
+                else:
+                    set_last_scanned_driver({'name': 'Unregistered RFID', 'rfid': 'RFID: ' + data['uid'], 'photo': None, 'log_type': '', 'time': ''})
 
             except:
                 print('Database error. Please run again.')
@@ -144,6 +207,33 @@ def read_serial():
     except:
         # do nothing
         disconnected = True
+        
+def set_last_scanned_driver(last_scanned):
+    print(last_scanned)
+    App.driverNameLabel['text'] = last_scanned['name']
+    App.driverRfidLabel['text'] = last_scanned['rfid']
+    App.driverLogTypeLabel['text'] = last_scanned['log_type']
+    App.driverLogTimeLabel['text'] = last_scanned['time']
+    
+    if last_scanned['photo'] != None:
+        fixed_height = 120
+        profile_photo = Image.open("C:/laragon/www/vehicle-gate-pass-system/public/storage/"+last_scanned['photo'])
+        height_percent = (fixed_height / float(profile_photo.size[1]))
+        width_size = int((float(profile_photo.size[0]) * float(height_percent)))
+        profile_photo = profile_photo.resize((width_size, fixed_height), Image.NEAREST)
+        new_photo = ImageTk.PhotoImage(profile_photo)
+        App.driverImage.configure(image=new_photo)
+        App.driverImage.image = new_photo
+        
+    else:
+        fixed_height = 120
+        profile_photo = Image.open("C:/laragon/www/vehicle-gate-pass-system/public/anonymous.png")
+        height_percent = (fixed_height / float(profile_photo.size[1]))
+        width_size = int((float(profile_photo.size[0]) * float(height_percent)))
+        profile_photo = profile_photo.resize((width_size, fixed_height), Image.NEAREST)
+        new_photo = ImageTk.PhotoImage(profile_photo)
+        App.driverImage.configure(image=new_photo)
+        App.driverImage.image = new_photo
 
 if __name__ == "__main__":
 
