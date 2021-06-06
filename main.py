@@ -51,7 +51,7 @@ class App(threading.Thread):
         logoLabel.place(x=30, y=20)
 
         # driver profile photo
-        fixed_height = 120
+        fixed_height = 115
         profile_photo = Image.open("C:/laragon/www/vehicle-gate-pass-system/public/anonymous.png")
         height_percent = (fixed_height / float(profile_photo.size[1]))
         width_size = int((float(profile_photo.size[0]) * float(height_percent)))
@@ -215,7 +215,7 @@ def set_last_scanned_driver(last_scanned):
     App.driverLogTimeLabel['text'] = last_scanned['time']
     
     if last_scanned['photo'] != None:
-        fixed_height = 120
+        fixed_height = 115
         profile_photo = Image.open("C:/laragon/www/vehicle-gate-pass-system/public/storage/"+last_scanned['photo'])
         height_percent = (fixed_height / float(profile_photo.size[1]))
         width_size = int((float(profile_photo.size[0]) * float(height_percent)))
@@ -225,7 +225,7 @@ def set_last_scanned_driver(last_scanned):
         App.driverImage.image = new_photo
         
     else:
-        fixed_height = 120
+        fixed_height = 115
         profile_photo = Image.open("C:/laragon/www/vehicle-gate-pass-system/public/anonymous.png")
         height_percent = (fixed_height / float(profile_photo.size[1]))
         width_size = int((float(profile_photo.size[0]) * float(height_percent)))
