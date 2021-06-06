@@ -209,7 +209,6 @@ def read_serial():
         disconnected = True
         
 def set_last_scanned_driver(last_scanned):
-    print(last_scanned)
     App.driverNameLabel['text'] = last_scanned['name']
     App.driverRfidLabel['text'] = last_scanned['rfid']
     App.driverLogTypeLabel['text'] = last_scanned['log_type']

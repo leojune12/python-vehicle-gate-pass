@@ -27,15 +27,15 @@ def check_driver(rfid, log_type):
 
     if len(drivers):
         log_driver(drivers[0], log_type)
-        if log_type == "1":
-            print(drivers[0]["name"] + " - " + drivers[0]["rfid"] + " - time-in")
-        elif log_type == "2":
-            print(drivers[0]["name"] + " - " + drivers[0]["rfid"] + " - time-out")
+        #if log_type == "1":
+            #print(drivers[0]["name"] + " - " + drivers[0]["rfid"] + " - time-in")
+        #elif log_type == "2":
+            #print(drivers[0]["name"] + " - " + drivers[0]["rfid"] + " - time-out")
 
         return True
 
     else:
-        print("Unregistered Driver - " + str(rfid))
+        #print("Unregistered Driver - " + str(rfid))
 
         return False
 
@@ -50,7 +50,6 @@ def log_driver(driver, log_type):
     db.commit()
     
 def get_last_scanned():
-    print('get_last_scanned')
     lastScannedCursor = db.cursor(dictionary=True)
 
     lastScannedSql = "SELECT * FROM logs ORDER BY ID DESC LIMIT 1"
