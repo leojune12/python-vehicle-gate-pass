@@ -75,18 +75,30 @@ def get_last_scanned():
         
         logType = logTypeCursor.fetchone()
         
+        vehicleTypeCursor = db.cursor(dictionary=True)
+        
+        vehicleTypeSql = "SELECT * FROM vehicle_types where id = " + str(driver['vehicle_type_id'])
+        
+        vehicleTypeCursor.execute(vehicleTypeSql)
+        
+        vehicleType = vehicleTypeCursor.fetchone()
+        
         driverName = "Name: " + driver['name']
         
         driverRfid = "RFID: " + driver['rfid']
         
         driverPhoto = driver['photo']
         
+        driverAddress = "Address: " + driver['address']
+        
+        driverVehicleType = "Vehicle Type: " + vehicleType['vehicle_type']
+        
         driverLogType = "Log Type: " + logType['log_type']
         
         driverLogTime = "Time: " + str(last_log['created_at'])
         
-        return {'name' : driverName, 'rfid': driverRfid, 'photo': driverPhoto, 'log_type': driverLogType, 'time': driverLogTime}
+        return {'name' : driverName, 'rfid': driverRfid, 'photo': driverPhoto, 'address': driverAddress, 'vehicle_type': driverVehicleType, 'log_type': driverLogType, 'time': driverLogTime}
     
     else:
-        {'name' : 'No records yet', 'rfid': '', 'photo': '', 'log_type': '', 'time': ''}
+        {'name' : 'No records yet', 'rfid': '', 'photo': '', 'address': '', 'vehicle_type': '', 'log_type': '', 'time': ''}
         

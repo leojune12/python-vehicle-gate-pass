@@ -15,6 +15,8 @@ class App(threading.Thread):
     driverImage = None
     driverNameLabel = None
     driverRfidLabel = None
+    driverAddressLabel = None
+    driverVehicleTypeLabel = None
     driverLogTypeLabel = None
     driverLogTimeLabel = None
     button = None
@@ -77,7 +79,7 @@ class App(threading.Thread):
         App.driverNameLabel["fg"] = "#333333"
         App.driverNameLabel["justify"] = "left"
         App.driverNameLabel["text"] = "Name:"
-        App.driverNameLabel.place(x=160, y=230, width=200, height=30)
+        App.driverNameLabel.place(x=160, y=230, width=200, height=20)
         
         # Driver RFID
         App.driverRfidLabel=tk.Label(self.root, anchor='w')
@@ -86,7 +88,25 @@ class App(threading.Thread):
         App.driverRfidLabel["fg"] = "#333333"
         App.driverRfidLabel["justify"] = "left"
         App.driverRfidLabel["text"] = "RFID:"
-        App.driverRfidLabel.place(x=160, y=260, width=200, height=30)   
+        App.driverRfidLabel.place(x=160, y=250, width=200, height=20)
+        
+        # Driver Address
+        App.driverAddressLabel=tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times',size=10)
+        App.driverAddressLabel["font"] = ft
+        App.driverAddressLabel["fg"] = "#333333"
+        App.driverAddressLabel["justify"] = "left"
+        App.driverAddressLabel["text"] = "Address:"
+        App.driverAddressLabel.place(x=160, y=270, width=200, height=20)
+        
+        # Driver Vehicle Type
+        App.driverVehicleTypeLabel=tk.Label(self.root, anchor='w')
+        ft = tkFont.Font(family='Times',size=10)
+        App.driverVehicleTypeLabel["font"] = ft
+        App.driverVehicleTypeLabel["fg"] = "#333333"
+        App.driverVehicleTypeLabel["justify"] = "left"
+        App.driverVehicleTypeLabel["text"] = "Vehicle Type:"
+        App.driverVehicleTypeLabel.place(x=160, y=290, width=200, height=20)
         
         # Driver Log Type
         App.driverLogTypeLabel=tk.Label(self.root, anchor='w')
@@ -95,7 +115,7 @@ class App(threading.Thread):
         App.driverLogTypeLabel["fg"] = "#333333"
         App.driverLogTypeLabel["justify"] = "left"
         App.driverLogTypeLabel["text"] = "Log Type:"
-        App.driverLogTypeLabel.place(x=160, y=290, width=210, height=30)  
+        App.driverLogTypeLabel.place(x=160, y=310, width=210, height=20)
         
         # Driver Log Time
         App.driverLogTimeLabel=tk.Label(self.root, anchor='w')
@@ -104,7 +124,8 @@ class App(threading.Thread):
         App.driverLogTimeLabel["fg"] = "#333333"
         App.driverLogTimeLabel["justify"] = "left"
         App.driverLogTimeLabel["text"] = "Time:"
-        App.driverLogTimeLabel.place(x=160, y=320, width=210, height=30)          
+        App.driverLogTimeLabel.place(x=160, y=330, width=210, height=20)
+        
         GLabel_964 = tk.Label(self.root)
         ft = tkFont.Font(family='Times', size=16)
         GLabel_964["font"] = ft
@@ -211,6 +232,8 @@ def read_serial():
 def set_last_scanned_driver(last_scanned):
     App.driverNameLabel['text'] = last_scanned['name']
     App.driverRfidLabel['text'] = last_scanned['rfid']
+    App.driverAddressLabel['text'] = last_scanned['address']
+    App.driverVehicleTypeLabel['text'] = last_scanned['vehicle_type']
     App.driverLogTypeLabel['text'] = last_scanned['log_type']
     App.driverLogTimeLabel['text'] = last_scanned['time']
     
